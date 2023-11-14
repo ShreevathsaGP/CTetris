@@ -1,0 +1,5 @@
+bin/
+lib/
+example/
+.DS_Store
+*/.DS_Store
