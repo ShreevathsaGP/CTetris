@@ -109,11 +109,11 @@ void draw_tetromino(SDL_Renderer *renderer, const TETROMINO_STATE *tet_state, i3
     }
 }
 void draw_preview_tetromino(SDL_Renderer *renderer, i32 index) {
-    printf("index = %d\n", index);
-
     SDL_Color base_color = BASE_COLOURS[index + 1];
     SDL_Color light_color = LIGHT_COLOURS[index + 1];
     SDL_Color dark_color = DARK_COLOURS[index + 1];
+
+    index = 0;
 
     // default [side = 3]
     i32 cell_size = 25;
@@ -121,7 +121,7 @@ void draw_preview_tetromino(SDL_Renderer *renderer, i32 index) {
 
     i32 x, y;
 
-    i32 x_start = (int)(WINDOW_WIDTH) / 2 + (4.3 * PADDING_X);
+    i32 x_start = (int)(WINDOW_WIDTH) / 2 + (5.7 * PADDING_X);
     i32 y_start = (FRACTION * UPPER_BUFFER) + ( ((1 - FRACTION) * UPPER_BUFFER)  / 2) - (1.8 * PADDING_Y);
 
     switch (index) {
@@ -188,7 +188,7 @@ void draw_preview_tetromino(SDL_Renderer *renderer, i32 index) {
 void draw_matrix(SDL_Renderer *renderer, const u8 *matrix, i32 width, i32 height, i32 x_offset, i32 y_offset, bool game_over) {
     fill_rect(renderer, x_offset, y_offset, width * CELL_SIZE, height * CELL_SIZE, TRUE_BLACK);
 
-    for (i32 row = game_over ? 1 : 0; row < height; ++row) {
+    for (i32 row = 0; row < height; ++row) {
         for (i32 col = 0; col < width; ++col) {
             u8 type = get_matrix(matrix, width, row, col);
             if (type) { draw_tetromino_cell(renderer, row, col, type, x_offset, y_offset, false); }
@@ -197,7 +197,7 @@ void draw_matrix(SDL_Renderer *renderer, const u8 *matrix, i32 width, i32 height
 }
 
 void render(const GAME_STATE *game_state, SDL_Renderer *renderer, TTF_Font *game_font, TTF_Font *upper_font, TTF_Font *lower_font) {
-    /* printf("RENDERING 1\n"); */
+    printf("RENDERING 1\n");
     char buffer[4096];
 
     draw_matrix(renderer, game_state->matrix, WIDTH, HEIGHT, 2 * PADDING_X, UPPER_BUFFER + PADDING_Y, game_state -> current_phase == GP_GAMEOVER);
@@ -251,7 +251,7 @@ void render(const GAME_STATE *game_state, SDL_Renderer *renderer, TTF_Font *game
     render_string(renderer, upper_font, buffer, WINDOW_WIDTH - (4 * PADDING_X), (FRACTION * UPPER_BUFFER) / 1.55, TA_RIGHT, TEXT_COLOUR);
 
     snprintf(buffer, sizeof(buffer), "LEVEL: %02d", game_state->current_level);
-    render_string(renderer, lower_font, buffer, 3.5 * PADDING_X, 
+    render_string(renderer, lower_font, buffer, 4.8 * PADDING_X, 
             (FRACTION * UPPER_BUFFER) + (((1 - FRACTION) * UPPER_BUFFER) / 2) - (1.8 * PADDING_Y), 
             TA_LEFT, TEXT_COLOUR);
 }

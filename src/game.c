@@ -307,6 +307,7 @@ void play_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
 }
 
 void update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
+    printf("update 1\n");
 
     switch(game_state -> current_phase) {
         case GP_START:
@@ -322,6 +323,8 @@ void update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
             gameover_state_update(game_state, input_state);
             break;
     }
+
+    printf("update 2\n");
 }
 
 // tetrominoes

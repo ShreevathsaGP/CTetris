@@ -17,7 +17,7 @@ typedef double f64;
 
 // game dims
 #define WIDTH 10
-#define HEIGHT 22
+#define HEIGHT 20
 
 // graphics
 #define FPS 30
