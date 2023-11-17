@@ -20,6 +20,7 @@ typedef struct PriorityQueue { PQ_NODE *array; i16 size; i16 capacity; } PQ;
 
 // priority queue functions
 PQ *newPQ(i16 capacity);
+void freePQ(PQ *p);
 bool is_empty(PQ *p);
 void enqueue(PQ *p, u8 data, u8 priority);
 u8 peek(PQ *p);
@@ -46,17 +47,21 @@ extern const u16 WAIT_PER_DROP[];
 
 // input state
 typedef struct InputState {
-    u8 a;
+    u8 p;
+    u8 r;
     u8 up;
     u8 down;
     u8 left;
     u8 right;
+    u8 space;
 
-    i8 difference_a;
+    i8 difference_p;
+    i8 difference_r;
     i8 difference_up;
     i8 difference_down;
     i8 difference_left;
     i8 difference_right;
+    i8 difference_space;
 } INPUT_STATE;
 
 // tetromino 
@@ -75,7 +80,9 @@ bool is_tetromino_valid(const TETROMINO_STATE *tet, const u8 *matrix, i32 width,
 
 
 // game state
-typedef enum GamePhase { GP_START, GP_PLAY, GP_LINE_CLEARANCE, GP_GAMEOVER } GAME_PHASE;
+typedef enum GamePhase { 
+    GP_START, GP_PLAY, GP_PAUSE, GP_LINE_CLEARANCE, GP_GAMEOVER,
+} GAME_PHASE;
 typedef struct GameState {
     u8 lines[HEIGHT];
     i32 remaining_lines;
@@ -104,7 +111,7 @@ i32 lines_needed(i32 start_level, i32 current_level); // lines needed for next l
                                                       //
 void start_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 void gameover_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
-void clearance_state_update(GAME_STATE *game_state);
+void clearance_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 void play_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 void update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 

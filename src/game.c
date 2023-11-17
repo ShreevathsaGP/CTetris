@@ -2,7 +2,7 @@
 
 void shuffle(u8 *array, int size) {
     int j; u8 temp;
-    for (int i = 0; i < size; i++) {
+    for (int i = size - 1; i > 0; i--) {
         // generate random index in range [0-i]
         j = rand() % (i + 1);
         temp = array[i];
@@ -10,7 +10,6 @@ void shuffle(u8 *array, int size) {
         array[j] = temp;
     }
 }
-
 
 // priority queue using arrays [DATA STRUCTURE - 1]
 PQ *newPQ(i16 capacity) {
@@ -21,6 +20,8 @@ PQ *newPQ(i16 capacity) {
 
     return p;
 }
+
+void freePQ(PQ *p) { free(p -> array); free(p); }
 
 void enqueue(PQ *p, u8 data, u8 priority) {
     if (p -> size == p -> capacity) { printf("PQ Full!\n"); return; }
@@ -254,7 +255,7 @@ void start_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) 
         game_state -> starting_level -= 1; 
     }
 
-    if (input_state -> difference_a > 0) {
+    if (input_state -> difference_space > 0) {
         memset(game_state -> matrix, 0, WIDTH * HEIGHT);
         game_state -> current_level = game_state -> starting_level;
         game_state -> no_lines = 0;
@@ -265,10 +266,13 @@ void start_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) 
 }
 
 void gameover_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
-    if (input_state -> difference_a > 0) { game_state -> current_phase = GP_START; }
+    if (input_state -> difference_space > 0) { game_state -> current_phase = GP_START; }
 }
 
-void clearance_state_update(GAME_STATE *game_state) {
+void clearance_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
+    if (input_state -> difference_r > 0) { game_state -> current_phase = GP_START; return; }
+    if (input_state -> difference_p > 0) { game_state -> current_phase = GP_PAUSE; return; }
+
     if (game_state -> current_time >= game_state -> highlight_end) {
         clear_lines(game_state -> matrix, WIDTH, HEIGHT, game_state -> lines);
         game_state -> no_lines += game_state -> remaining_lines;
@@ -284,19 +288,24 @@ void play_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
     i32 death_row = 0;
     if (!is_row_empty(game_state->matrix, WIDTH, death_row)) {
         game_state->current_phase = GP_GAMEOVER;
+        return;
     }
 
+    if (input_state -> difference_r > 0) { game_state -> current_phase = GP_START; return; }
+    if (input_state -> difference_p > 0) { game_state -> current_phase = GP_PAUSE; return; }
+
     TETROMINO_STATE tetromino = game_state -> current_tetromino;
+
     if (input_state -> difference_left > 0) { --tetromino.col; }
     if (input_state->difference_right> 0) { ++tetromino.col; }
     if (input_state->difference_up > 0) { tetromino.rotation = (tetromino.rotation + 1) % 4; }
     if (is_tetromino_valid(&tetromino, game_state -> matrix, WIDTH, HEIGHT)) { game_state -> current_tetromino = tetromino; }
     if (input_state->difference_down > 0) { soft_drop(game_state); }
-    if (input_state->difference_a > 0) { while(soft_drop(game_state)); }
+    if (input_state->difference_space > 0) { while(soft_drop(game_state)); }
 
-    while (game_state->current_time >= game_state->drop_time) { 
-        soft_drop(game_state); 
-    }
+    // tetromino dropping should be time based not frame based
+    while (game_state->current_time >= game_state->drop_time) { soft_drop(game_state); }
+
     game_state->remaining_lines = get_lines(game_state->matrix, WIDTH, HEIGHT, game_state->lines);
 
     if (game_state->remaining_lines > 0) {
@@ -306,9 +315,12 @@ void play_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
     
 }
 
-void update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
-    printf("update 1\n");
+void pause_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
+    if (input_state -> difference_r > 0) { game_state -> current_phase = GP_START; return; }
+    if (input_state -> difference_p > 0) { game_state -> current_phase = GP_PLAY; }
+}
 
+void update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
     switch(game_state -> current_phase) {
         case GP_START:
             start_state_update(game_state, input_state);
@@ -316,15 +328,16 @@ void update(GAME_STATE *game_state, const INPUT_STATE *input_state) {
         case GP_PLAY:
             play_state_update(game_state, input_state);
             break;
+        case GP_PAUSE:
+            pause_state_update(game_state, input_state);
+            break;
         case GP_LINE_CLEARANCE:
-            clearance_state_update(game_state);
+            clearance_state_update(game_state, input_state);
             break;
         case GP_GAMEOVER:
             gameover_state_update(game_state, input_state);
             break;
     }
-
-    printf("update 2\n");
 }
 
 // tetrominoes

@@ -29,13 +29,7 @@ int main() {
     TTF_Font *upper_font = TTF_OpenFont(font_path, 32);
     TTF_Font *lower_font = TTF_OpenFont(font_path, 26);
 
-    if (!game_font || !upper_font || !lower_font) { printf("font aint there brev!\n"); }
-
-    /* GAME_STATE game_state; */
-    /* INPUT_STATE input_state; */
-
-    /* CLEAR_STRUCT(game_state); */
-    /* CLEAR_STRUCT(input_state); */
+    if (!game_font || !upper_font || !lower_font) { printf("Font file needs be at path: %s!", font_path); }
 
     GAME_STATE *game_state = calloc(1, sizeof(GAME_STATE));
     INPUT_STATE *input_state = calloc(1, sizeof(INPUT_STATE));
@@ -112,17 +106,22 @@ int main() {
         // prevents holding (mimics the old consoles)
         INPUT_STATE previous_input = *input_state;
 
-        input_state -> left = keyboard_state[SDL_SCANCODE_LEFT];
-        input_state -> right = keyboard_state[SDL_SCANCODE_RIGHT];
+        input_state -> p = keyboard_state[SDL_SCANCODE_P];
+        input_state -> r = keyboard_state[SDL_SCANCODE_R];
         input_state -> up = keyboard_state[SDL_SCANCODE_UP];
         input_state -> down = keyboard_state[SDL_SCANCODE_DOWN];
-        input_state -> a = keyboard_state[SDL_SCANCODE_SPACE];
+        input_state -> left = keyboard_state[SDL_SCANCODE_LEFT];
+        input_state -> right = keyboard_state[SDL_SCANCODE_RIGHT];
+        input_state -> space = keyboard_state[SDL_SCANCODE_SPACE];
 
-        input_state -> difference_left = (i8)input_state -> left - (i8)previous_input.left;
-        input_state -> difference_right = (i8)input_state -> right - (i8)previous_input.right;
+        input_state -> difference_p = (i8)input_state -> p - (i8)previous_input.p;
+        input_state -> difference_r = (i8)input_state -> r - (i8)previous_input.r;
         input_state -> difference_up = (i8)input_state -> up - (i8)previous_input.up;
         input_state -> difference_down = (i8)input_state -> down - (i8)previous_input.down;
-        input_state -> difference_a = (i8)input_state -> a - (i8)previous_input.a;
+        input_state -> difference_left = (i8)input_state -> left - (i8)previous_input.left;
+        input_state -> difference_right = (i8)input_state -> right - (i8)previous_input.right;
+        input_state -> difference_space = (i8)input_state -> space - (i8)previous_input.space;
+
         //--EVENT-HANDLING----------------------------------------------------------------------------------------------------------
 
         // clear the window to black
@@ -166,6 +165,7 @@ int main() {
     //--GAME-LOOP-------------------------------------------------------------------------------------------------------------------
 
     //--CLEANUP---------------------------------------------------------------------------------------------------------------------
+    freePQ(game_state -> priority_queue);
     free(game_state); free(input_state);
     TTF_CloseFont(game_font);
     TTF_CloseFont(upper_font);
