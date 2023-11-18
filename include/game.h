@@ -112,6 +112,7 @@ i32 lines_needed(i32 start_level, i32 current_level); // lines needed for next l
 void start_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 void gameover_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 void clearance_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
+void pause_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 void play_state_update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 void update(GAME_STATE *game_state, const INPUT_STATE *input_state);
 

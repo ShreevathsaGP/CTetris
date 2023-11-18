@@ -32,9 +32,6 @@ typedef double f64;
 #define CELL_SIZE ((WINDOW_HEIGHT - UPPER_BUFFER) / HEIGHT)
 #define WINDOW_WIDTH (CELL_SIZE * WIDTH) + (PADDING_X * 4)
 
-// gamplay
-#define TETROMINO_MOD 1000 // ms
-
 // priority queue
 #define MAX_PQ_SIZE 7
 
